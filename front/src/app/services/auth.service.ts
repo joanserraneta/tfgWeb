@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -6,19 +8,29 @@ import { ApiService } from './api.service';
 })
 export class AuthService extends ApiService {
 
-  login(email: string, password: string) {
-    return this.post('/auth/login', { email, password });
+  constructor(
+    http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    super(http);
+  }
+
+  getToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 
   saveToken(token: string) {
-    localStorage.setItem('token', token);
-  }
-
-  getToken() {
-    return localStorage.getItem('token');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('token', token);
+    }
   }
 
   logout() {
-    localStorage.removeItem('token');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+    }
   }
 }
