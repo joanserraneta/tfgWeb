@@ -1,12 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from app.config import DATABASE_URL
 
-DATABASE_URL = "mysql+pymysql://AdminTienda:admintienda@localhost:3306/tienda_marketplace"
+
 
 engine = create_engine(
     DATABASE_URL,
     echo=True,       
-    pool_pre_ping=True  # evita conexiones muertas
 )
 
 SessionLocal = sessionmaker(
@@ -16,3 +16,10 @@ SessionLocal = sessionmaker(
 )
 
 Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
