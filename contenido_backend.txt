@@ -1,0 +1,434 @@
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\auth\deps.py ====================
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
+from sqlalchemy.orm import Session
+
+from app.database import SessionLocal
+from app.models.usuario import Usuario
+from app.auth.security import SECRET_KEY, ALGORITHM
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int | None = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Token inválido")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+    user = db.query(Usuario).filter(Usuario.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=401, detail="Usuario no encontrado")
+
+    return user
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\auth\schemas.py ====================
+
+from pydantic import BaseModel, EmailStr
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    nombre: str | None = None
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\auth\security.py ====================
+
+from datetime import datetime, timedelta
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jose import jwt, JWTError
+from passlib.context import CryptContext
+
+from app.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+
+#Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+#JWT Bearer
+security = HTTPBearer()
+
+
+#PASSWORDS
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+# JWT 
+
+def create_access_token(data: dict) -> str:
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> str:
+    token = credentials.credentials
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str | None = payload.get("sub")
+
+        if email is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token inválido"
+            )
+
+        return email
+
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido o expirado"
+        )
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\config.py ====================
+
+SECRET_KEY = "super-secret-key-cambiar-en-produccion"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+DATABASE_URL = "mysql+pymysql://AdminTienda:admintienda@localhost:3306/tienda_marketplace"
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\database.py ====================
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from app.config import DATABASE_URL
+
+
+
+engine = create_engine(
+    DATABASE_URL,
+    echo=True,       
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\main.py ====================
+
+from fastapi import FastAPI
+from app.database import Base, engine
+from app.routers import auth
+import app.models
+from app.routers import productos
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# Crear tablas si no existen
+Base.metadata.create_all(bind=engine)
+
+# Registrar routers
+app.include_router(auth.router)
+app.include_router(productos.router)
+
+
+@app.get("/db-test")
+def db_test():
+    return {"db": "ok"}
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\models\init.py ====================
+
+from .usuario import User
+from .vendedor import Vendedor
+from .producto import Producto
+from .pedido import Pedido
+from .pedido_producto import PedidoProducto
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\models\pedido.py ====================
+
+from sqlalchemy import Column, Integer, Decimal, ForeignKey, Enum, DateTime
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Pedido(Base):
+    __tablename__ = "pedidos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    total = Column(Decimal(10,2), nullable=False)
+    estado = Column(Enum("pendiente", "pagado", "enviado"), default="pendiente")
+    creado_en = Column(DateTime(timezone=True), server_default=func.now())
+
+    productos = relationship("PedidoProducto", back_populates="pedido")
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\models\pedido_producto.py ====================
+
+from sqlalchemy import Column, Integer, ForeignKey, Decimal
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class PedidoProducto(Base):
+    __tablename__ = "pedido_productos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    pedido_id = Column(Integer, ForeignKey("pedidos.id"), nullable=False)
+    producto_id = Column(Integer, ForeignKey("productos.id"), nullable=False)
+    cantidad = Column(Integer, nullable=False)
+    precio_unitario = Column(Decimal(10,2), nullable=False)
+
+    pedido = relationship("Pedido", back_populates="productos")
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\models\producto.py ====================
+
+from sqlalchemy import Column, Integer, String, Text, Numeric, ForeignKey
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Producto(Base):
+    __tablename__ = "productos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(150), nullable=False)
+    descripcion = Column(Text)
+    precio = Column(Numeric(10, 2), nullable=False)
+    stock = Column(Integer, nullable=False)
+
+    vendedor_id = Column(Integer, ForeignKey("vendedores.id"), nullable=False)
+
+    vendedor = relationship(
+        "Vendedor",
+        back_populates="productos"
+    )
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\models\usuario.py ====================
+
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.sql import func
+from app.database import Base
+
+class Usuario(Base):
+    __tablename__ = "usuarios"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    nombre = Column(String(100))
+    creado_en = Column(DateTime(timezone=True), server_default=func.now())
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\models\vendedor.py ====================
+
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Vendedor(Base):
+    __tablename__ = "vendedores"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(150), nullable=False)
+    descripcion = Column(Text)
+
+    productos = relationship(
+        "Producto",
+        back_populates="vendedor",
+        cascade="all, delete"
+    )
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\routers\auth.py ====================
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from app.auth.schemas import UserCreate, UserLogin, Token
+from app.auth.security import hash_password, verify_password, create_access_token
+from app.auth.deps import get_db
+from app.models.usuario import Usuario
+from app.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+@router.post("/register", status_code=201)
+def register(user: UserCreate, db: Session = Depends(get_db)):
+    exists = db.query(Usuario).filter(Usuario.email == user.email).first()
+    if exists:
+        raise HTTPException(status_code=400, detail="Email ya registrado")
+
+    new_user = Usuario(
+        email=user.email,
+        password_hash=hash_password(user.password),
+        nombre=user.nombre
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return {"message": "Usuario creado correctamente"}
+
+@router.post("/login", response_model=Token)
+def login(data: UserLogin, db: Session = Depends(get_db)):
+    user = db.query(Usuario).filter(Usuario.email == data.email).first()
+    if not user or not verify_password(data.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+
+    token = create_access_token({"sub": user.id})
+    return {"access_token": token}
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\app\routers\productos.py ====================
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models.producto import Producto
+from app.models.vendedor import Vendedor
+from app.auth.security import get_current_user
+
+router = APIRouter(
+    prefix="/productos",
+    tags=["Productos"]
+)
+
+@router.get("/")
+def listar_productos(db: Session = Depends(get_db)):
+    return db.query(Producto).all()
+
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+def crear_producto(
+    nombre: str,
+    descripcion: str,
+    precio: float,
+    stock: int,
+    vendedor_id: int,
+    db: Session = Depends(get_db), 
+    user_email: str = Depends(get_current_user)
+):
+    vendedor = db.query(Vendedor).filter(Vendedor.id == vendedor_id).first()
+
+    if not vendedor:
+        raise HTTPException(status_code=404, detail="Vendedor no encontrado")
+
+    producto = Producto(
+        nombre=nombre,
+        descripcion=descripcion,
+        precio=precio,
+        stock=stock,
+        vendedor_id=vendedor_id
+    )
+
+    db.add(producto)
+    db.commit()
+    db.refresh(producto)
+
+    return producto
+    
+
+@router.delete("/{producto_id}")
+def borrar_producto(
+    producto_id: int,
+    db: Session = Depends(get_db),
+    user_email: str = Depends(get_current_user)
+):
+    producto = db.query(Producto).filter(Producto.id == producto_id).first()
+
+    if not producto:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+    # luego validaremos que el usuario sea el dueño
+    db.delete(producto)
+    db.commit()
+
+    return {"message": "Producto eliminado"}
+
+
+==================== C:\Users\joan_\OneDrive\Documentos\TFG\tfgWeb\backend\requirements.txt ====================
+
+annotated-doc==0.0.4
+annotated-types==0.7.0
+anyio==4.12.1
+argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
+bcrypt==5.0.0
+cffi==2.0.0
+click==8.3.1
+colorama==0.4.6
+ecdsa==0.19.1
+fastapi==0.128.0
+greenlet==3.3.1
+h11==0.16.0
+idna==3.11
+passlib==1.7.4
+pyasn1==0.6.2
+pycparser==3.0
+pydantic==2.12.5
+pydantic_core==2.41.5
+PyMySQL==1.1.2
+python-dotenv==1.2.1
+python-jose==3.5.0
+rsa==4.9.1
+six==1.17.0
+SQLAlchemy==2.0.46
+starlette==0.50.0
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+uvicorn==0.40.0
