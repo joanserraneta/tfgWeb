@@ -9,4 +9,9 @@ export class PedidosService extends ApiService {
   getPedidos() {
     return this.get('/pedidos');
   }
+
+  addProducto(Producto prod){
+    this.post('/')
+
+  }
 }

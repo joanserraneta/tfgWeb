@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductosService, Producto } from '../../services/productos.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './productos.component.html'
+  imports: [CommonModule, FormsModule],
+  templateUrl: './productos.component.html',
+  styleUrls: ['./productos.component.css']
 })
 export class ProductosComponent implements OnInit {
 
@@ -17,7 +19,11 @@ export class ProductosComponent implements OnInit {
   constructor(private productosService: ProductosService) {}
 
   ngOnInit(): void {
-    console.log('ngOnInit ejecutado');
+    this.cargandoProductos()
+  }
+
+  cargandoProductos(): void{
+     console.log('ngOnInit ejecutado');
 
     this.productosService.getProductos().subscribe({
       next: (data) => {
@@ -31,5 +37,9 @@ export class ProductosComponent implements OnInit {
         this.cargando = false;
       }
     });
+  }
+
+  agregarAlCarrito(p){
+    
   }
 }

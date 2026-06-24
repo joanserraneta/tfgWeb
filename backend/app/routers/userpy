@@ -1,0 +1,36 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.auth.security import get_current_user
+from app.models.usuario import Usuario
+from backend.app.schemas.schemasMain import UsuarioUpdate
+
+router = APIRouter(
+    prefix="/user",
+    tags=["USER"]
+)
+
+@router.get("/{user_id}")
+def get_user(
+    user_id : int,
+    db: Session = Depends(get_db)):
+
+    return db.query(Usuario.id == user_id).first()
+
+
+@router.put("/{user_id}")
+def actualiza_user(
+    user_id : int,
+    usuarioUp : UsuarioUpdate,
+    db: Session = Depends(get_db)
+):
+    usuario = db.query(Usuario.id == user_id).first()
+    usuario.email = usuarioUp.email
+    usuario.password_hash = usuarioUp.password_hash
+    usuario.nombre = usuarioUp.nombre
+    usuario.creado_en = usuarioUp.creado_en
+
+    db.add(usuario)
+    db. commit(usuario)
+    db.refresh(usuario)
+    return usuario

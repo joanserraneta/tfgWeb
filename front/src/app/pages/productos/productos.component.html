@@ -1,18 +1,49 @@
-<h2>Productos</h2>
+<h2 class="titulo-productos">Productos</h2>
 
-<p *ngIf="cargando">Cargando productos...</p>
+@if (cargando) {
+  <p>Cargando productos...</p>
+}
 
-<p *ngIf="error">{{ error }}</p>
+@if (error) {
+  <p>{{ error }}</p>
+}
 
-<div *ngIf="!cargando && productos.length === 0">
-  No hay productos
-</div>
-
-<div *ngIf="!cargando">
-  <div *ngFor="let p of productos" class="card">
-    <h3>{{ p.nombre }}</h3>
-    <p>{{ p.descripcion }}</p>
-    <p>Precio: {{ p.precio }} €</p>
-    <p>Stock: {{ p.stock }}</p>
+@if (!cargando && productos.length === 0) {
+  <div>
+    No hay productos
   </div>
-</div>
+}
+
+@if (!cargando) {
+  <div class="grid-productos">
+    @for (p of productos; track p.id) {
+      <div class="producto">
+        <h3>{{ p.nombre }}</h3>
+        <p>{{ p.descripcion }}</p>
+        <p>Precio: {{ p.precio }} €/kg</p>
+        <label for="cantidad-{{ p.id }}">Cantidad:</label>
+        <input
+          id="cantidad-{{ p.id }}"
+          class="input-cantidad"
+          type="text"
+          list="medidas-usuales"
+          placeholder="Ej: 1 kg"
+          [(ngModel)]="cantidades[p.id]"
+        />
+
+        <button (click)="agregarAlCarrito(p)">
+          Añadir al carrito
+        </button>
+      </div>
+    }
+  </div>
+}
+
+<datalist id="medidas-usuales">
+  <option value="250 g"></option>
+  <option value="500 g"></option>
+  <option value="1 kg"></option>
+  <option value="1.5 kg"></option>
+  <option value="2 kg"></option>
+  <option value="3 kg"></option>
+</datalist>

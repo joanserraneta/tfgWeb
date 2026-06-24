@@ -3,7 +3,6 @@ from app.database import Base, engine
 from app.routers import auth
 import app.models
 from app.routers import productos
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -16,6 +15,7 @@ app.add_middleware(
     ],
     allow_credentials=True,
     allow_methods=["*"],
+    # Permite todas las cabeceras, importante para que Angular pueda enviar el token JWT en la cabecera Authorization
     allow_headers=["*"],
 )
 # Crear tablas si no existen
