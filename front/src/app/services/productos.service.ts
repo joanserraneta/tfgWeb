@@ -8,6 +8,8 @@ export interface Producto {
   descripcion: string;
   precio: number;
   stock: number;
+  vendedor_id: number;
+  imagen_portada_url?: string;
 }
 
 @Injectable({

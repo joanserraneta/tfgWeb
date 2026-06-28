@@ -11,4 +11,5 @@ class Usuario(Base):
     password_hash = Column(String(255), nullable=False)
     nombre = Column(String(100))
     creado_en = Column(DateTime(timezone=True), server_default=func.now())
-    carrito = relationship("Carrito", backPopulates = "usuario")
+
+    carritos = relationship("Carrito", back_populates = "usuario")

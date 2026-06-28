@@ -1,49 +1,115 @@
-<h2 class="titulo-productos">Productos</h2>
+<head>
+  <meta charset="utf-8">
+  <title>TfgWeb</title>
+  <base href="/">
 
-@if (cargando) {
-  <p>Cargando productos...</p>
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
 
-@if (error) {
-  <p>{{ error }}</p>
-}
+<h2 class="titulo-productos">
+  <img src="/img/fresc1.png" alt="Icono de alcachofa" class="icono-alcachofa">
+  Fresc
+</h2>
 
-@if (!cargando && productos.length === 0) {
-  <div>
-    No hay productos
+<!-- --------------------Menu-------------------------->
+<mat-toolbar>
+  <button matIconButton class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Menu</span>
+  <span class="example-spacer"></span>
+  <button matIconButton class="search-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>search</mat-icon>
+  </button>
+  <button matIconButton class="login-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>login</mat-icon>
+  </button>
+  <button matIconButton class="cart-icon" aria-label="Example icon-button with cart icon">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+</mat-toolbar>
+<!-- --------------------BANNER-------------------------->
+<div class="banner">
+  <img class="banner-img" [src]="bannerImagenes[bannerActual].src" [alt]="bannerImagenes[bannerActual].titulo">
+  <div class="banner-overlay">
+    <h3>{{bannerImagenes[bannerActual].titulo}}</h3>
+    <p>{{bannerImagenes[bannerActual].texto}}</p>
   </div>
-}
 
-@if (!cargando) {
-  <div class="grid-productos">
-    @for (p of productos; track p.id) {
-      <div class="producto">
-        <h3>{{ p.nombre }}</h3>
-        <p>{{ p.descripcion }}</p>
-        <p>Precio: {{ p.precio }} €/kg</p>
-        <label for="cantidad-{{ p.id }}">Cantidad:</label>
-        <input
-          id="cantidad-{{ p.id }}"
-          class="input-cantidad"
-          type="text"
-          list="medidas-usuales"
-          placeholder="Ej: 1 kg"
-          [(ngModel)]="cantidades[p.id]"
-        />
+  <button matIconButton class="banner-btn banner-btn-left" (click)="anteriorBanner()">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
 
-        <button (click)="agregarAlCarrito(p)">
-          Añadir al carrito
-        </button>
-      </div>
+  <button mat-icon-button class="banner-btn banner-btn-right" (click)="siguienteBanner()">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+
+  <div class="banner-indicadores">
+    @for (imagen of bannerImagenes; track $index) {
+    <button class="banner-punto" [class.activo]="bannerActual === $index" (click)="irABanner($index)"></button>
     }
   </div>
+
+</div>
+<!-- --------------------PRODUCTOS-------------------------->
+@if (cargando) {
+<p>Cargando productos...</p>
+}
+@if (error) {
+<p>{{ error }}</p>
+}
+@if (!cargando && productos.length === 0) {
+<div>No hay productos</div>
 }
 
-<datalist id="medidas-usuales">
-  <option value="250 g"></option>
-  <option value="500 g"></option>
-  <option value="1 kg"></option>
-  <option value="1.5 kg"></option>
-  <option value="2 kg"></option>
-  <option value="3 kg"></option>
-</datalist>
+@if (!cargando && productos.length > 0) {
+<div class="contenedor-productos">
+  <mat-grid-list cols="4" rowHeight="480px" >
+    @for (p of productos; track p.id) {
+    <mat-grid-tile>
+      <mat-card class="producto-card" appearance="outlined">
+        <img 
+        mat-card-image 
+        class="producto-img"
+        [src]="p.imagen_portada_url || '/img/productos/default.png'"
+          alt="Imagen del producto">
+
+        <mat-card-content>
+          <mat-card-title>{{ p.nombre }}</mat-card-title>
+          <p><strong>Precio:</strong> {{ p.precio }} €</p>
+
+          <mat-form-field appearance="outline" class="campo-cantidad">
+            <mat-label>Cantidad</mat-label>
+
+            <mat-select [(ngModel)]="cantidadesSeleccionadas[p.id]">
+              @for (cantidad of cantidades; track cantidad.value) {
+              <mat-option [value]="cantidad.value">
+                {{ cantidad.viewValue }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button matButton="filled" (click)="agregarAlCarrito(p)">
+            Añadir al carrito
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+    }
+  </mat-grid-list>
+</div>
+
+<div class="paginator">
+<mat-paginator [length]="100"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]"
+              aria-label="Select page">
+</mat-paginator>
+</div>
+
+}

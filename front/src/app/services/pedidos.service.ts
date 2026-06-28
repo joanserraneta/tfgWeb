@@ -10,8 +10,5 @@ export class PedidosService extends ApiService {
     return this.get('/pedidos');
   }
 
-  addProducto(Producto prod){
-    this.post('/')
 
-  }
 }
