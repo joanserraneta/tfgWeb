@@ -1,0 +1,19 @@
+<h1>Detalle del producto</h1>
+@if (cargando){
+    <p>Cargando productos...</p>
+}
+@if (error) {
+    <p>{{ error }}</p>
+}
+
+@if (producto) {
+    <main>
+        <img [src]="producto.imagen_portada_url || '/img/productos/default.png'" 
+        alt="'Imagen de '' + producto.nombre "
+        >
+
+        <h1>{{producto.nombre}}</h1>
+
+        
+    </main>
+}
