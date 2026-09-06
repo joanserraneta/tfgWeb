@@ -1,19 +1,121 @@
-<h1>Detalle del producto</h1>
 @if (cargando){
-    <p>Cargando productos...</p>
+<p>Cargando productos...</p>
 }
 @if (error) {
-    <p>{{ error }}</p>
+<p>{{ error }}</p>
 }
 
 @if (producto) {
-    <main>
-        <img [src]="producto.imagen_portada_url || '/img/productos/default.png'" 
-        alt="'Imagen de '' + producto.nombre "
-        >
+<main>
 
-        <h1>{{producto.nombre}}</h1>
+    <head>
+        <meta charset="utf-8">
+        <title>TfgWeb</title>
+        <base href="/">
 
-        
-    </main>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+            rel="stylesheet">
+    </head>
+
+    <h2 class="titulo-productos" routerLink="/productos">
+        <img src="/img/fresc1.png" alt="Icono de alcachofa" class="icono-alcachofa" routerLink="/productos">
+        Fresc
+    </h2>
+
+
+    <!-- --------------------Menu-------------------------->
+    <mat-toolbar>
+        <button matIconButton class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+                <mat-icon>dialpad</mat-icon>
+                <span>Redial</span>
+            </button>
+            <button mat-menu-item disabled>
+                <mat-icon>voicemail</mat-icon>
+                <span>Check voice mail</span>
+            </button>
+            <button mat-menu-item>
+                <mat-icon>notifications_off</mat-icon>
+                <span>Disable alerts</span>
+            </button>
+        </mat-menu>
+        <span>Menu</span>
+        <span class="example-spacer"></span>
+        <button matIconButton class="search-icon" aria-label="Example icon-button with heart icon">
+            <mat-icon>search</mat-icon>
+        </button>
+        <button matIconButton class="login-icon" aria-label="Example icon-button with share icon">
+            <mat-icon>login</mat-icon>
+        </button>
+        <button matIconButton class="cart-icon" aria-label="Example icon-button with cart icon">
+            <mat-icon>shopping_cart</mat-icon>
+        </button>
+    </mat-toolbar>
+
+
+    <!-- -------------------articulo ----------------------->
+    <mat-grid-list cols="10" rowHeight="500px">
+        @for (tile of tiles; track tile) {
+        <mat-grid-tile [colspan]="tile.cols" [rowspan]="tile.rows" [style.background]="tile.color">{{tile.color}}>
+            @if ($index == 1){
+            <mat-card class="example-card" appearance="outlined">
+                <mat-card-header>
+                    <div mat-card-avatar class="example-header-image"></div>
+                    <mat-card-title>{{producto.nombre}}</mat-card-title>
+                    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+                </mat-card-header>
+                <img mat-card-image class="producto-img"
+                    [src]="producto.imagen_portada_url || '/img/productos/default.png'" alt="Imagen del producto">
+
+            </mat-card>
+            }
+            @if ($index == 3 ){
+            <mat-card class="example-card" appearance="outlined">
+                <mat-card-header>
+                    <div mat-card-avatar class="example-header-image"></div>
+                    <mat-card-title>{{producto.nombre}}</mat-card-title>
+                    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content>
+                    <p> {{producto.descripcion}} </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button matButton>LIKE</button>
+                    <button matButton>SHARE</button>
+                </mat-card-actions>
+            </mat-card>
+            }
+
+            @if ($index == 4){
+
+            <mat-card class="example-card" appearance="outlined">
+                <mat-card-header>
+                    <mat-card-title>{{producto.nombre}}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>{{producto.descripcion}}</p>
+                </mat-card-content>
+                <mat-card-footer class="example-card-footer">
+                    <mat-chip-set aria-label="Chihuahua traits">
+                        <mat-chip>Dulce</mat-chip>
+                        <mat-chip>Natural</mat-chip>
+                        <mat-chip>Producto nacional</mat-chip>
+                    </mat-chip-set>
+                </mat-card-footer>
+            </mat-card>
+
+            }
+
+        </mat-grid-tile>
+        }
+    </mat-grid-list>
+
+
+</main>
 }

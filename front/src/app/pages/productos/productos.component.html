@@ -15,9 +15,23 @@
 
 <!-- --------------------Menu-------------------------->
 <mat-toolbar>
-  <button matIconButton class="example-icon" aria-label="Example icon-button with menu icon">
-    <mat-icon>menu</mat-icon>
-  </button>
+         <button matIconButton class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+                <mat-icon>dialpad</mat-icon>
+                <span>Redial</span>
+            </button>
+            <button mat-menu-item disabled>
+                <mat-icon>voicemail</mat-icon>
+                <span>Check voice mail</span>
+            </button>
+            <button mat-menu-item>
+                <mat-icon>notifications_off</mat-icon>
+                <span>Disable alerts</span>
+            </button>
+        </mat-menu>
   <span>Menu</span>
   <span class="example-spacer"></span>
   <button matIconButton class="search-icon" aria-label="Example icon-button with heart icon">
@@ -69,7 +83,10 @@
   <mat-grid-list cols="4" rowHeight="480px" >
     @for (p of productos; track p.id) {
     <mat-grid-tile>
-      <mat-card class="producto-card" appearance="outlined">
+      <mat-card class="producto-card" 
+        appearance="outlined"
+          [routerLink] ="['/item', p.id]"
+        >
         <img 
         mat-card-image 
         class="producto-img"

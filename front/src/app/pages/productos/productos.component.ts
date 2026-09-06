@@ -11,7 +11,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatPaginatorModule } from '@angular/material/paginator';
-
+import { RouterLink } from '@angular/router';
+import {MatMenuModule} from '@angular/material/menu';
 
 interface Cantidades {
   value: string;
@@ -27,7 +28,8 @@ interface Cantidades {
     MatGridListModule,
     MatCardModule,
     MatButtonModule,
-    MatFormFieldModule, MatSelectModule, MatInputModule, FormsModule, MatToolbarModule, MatIconModule, MatPaginatorModule
+    RouterLink,
+    MatFormFieldModule, MatSelectModule, MatInputModule, FormsModule, MatToolbarModule, MatIconModule, MatPaginatorModule, MatMenuModule
   ],
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
