@@ -18,16 +18,39 @@
   object-fit: contain;
 }
 .producto-img {
-  height: 100%;
-  width: 100%;
+  height: 500px;
+  width: 500px;
   overflow: hidden;
   object-fit: cover;
 }
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-.example-card {
+.producto-info {
   width: 100%;
   height: 100%;
   max-width: none;
   box-sizing: border-box;
   overflow: hidden;
+}
+
+.producto-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.producto-principal {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    minmax(320px, 0.8fr);
+
+  gap: 24px;
+  align-items: stretch;
+  padding-bottom: 100px;
 }

@@ -15,23 +15,23 @@
 
 <!-- --------------------Menu-------------------------->
 <mat-toolbar>
-         <button matIconButton class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-            <mat-icon>menu</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-            <button mat-menu-item>
-                <mat-icon>dialpad</mat-icon>
-                <span>Redial</span>
-            </button>
-            <button mat-menu-item disabled>
-                <mat-icon>voicemail</mat-icon>
-                <span>Check voice mail</span>
-            </button>
-            <button mat-menu-item>
-                <mat-icon>notifications_off</mat-icon>
-                <span>Disable alerts</span>
-            </button>
-        </mat-menu>
+  <button matIconButton class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item>
+      <mat-icon>dialpad</mat-icon>
+      <span>Redial</span>
+    </button>
+    <button mat-menu-item disabled>
+      <mat-icon>voicemail</mat-icon>
+      <span>Check voice mail</span>
+    </button>
+    <button mat-menu-item>
+      <mat-icon>notifications_off</mat-icon>
+      <span>Disable alerts</span>
+    </button>
+  </mat-menu>
   <span>Menu</span>
   <span class="example-spacer"></span>
   <button matIconButton class="search-icon" aria-label="Example icon-button with heart icon">
@@ -40,9 +40,46 @@
   <button matIconButton class="login-icon" aria-label="Example icon-button with share icon">
     <mat-icon>login</mat-icon>
   </button>
-  <button matIconButton class="cart-icon" aria-label="Example icon-button with cart icon">
+  <button matIconButton [matMenuTriggerFor]="carritoMenu" class="cart-icon" aria-label="Example icon-button with cart icon">
     <mat-icon>shopping_cart</mat-icon>
   </button>
+  <mat-menu #carritoMenu="matMenu" class="carrito-menu">
+
+    <div class="carrito-popup" (click)="$event.stopPropagation()">
+
+      <h3>1 ARTÍCULO EN LA CESTA</h3>
+
+      <div class="producto-carrito">
+        <img src="assets/platano.jpg">
+
+        <div>
+          <strong>Plátano de Canarias</strong>
+          <p>Precio: 2,50 €</p>
+          <p>Cantidad: 1</p>
+        </div>
+
+        <button mat-icon-button>
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <hr>
+
+      <h3>Subtotal: 2,50 €</h3>
+
+      <div class="acciones">
+        <button mat-stroked-button>
+          Ver carrito
+        </button>
+
+        <button mat-flat-button>
+          Finalizar compra
+        </button>
+      </div>
+
+    </div>
+
+  </mat-menu>
 </mat-toolbar>
 <!-- --------------------BANNER-------------------------->
 <div class="banner">
@@ -80,17 +117,11 @@
 
 @if (!cargando && productos.length > 0) {
 <div class="contenedor-productos">
-  <mat-grid-list cols="4" rowHeight="480px" >
+  <mat-grid-list cols="4" rowHeight="480px">
     @for (p of productos; track p.id) {
     <mat-grid-tile>
-      <mat-card class="producto-card" 
-        appearance="outlined"
-          [routerLink] ="['/item', p.id]"
-        >
-        <img 
-        mat-card-image 
-        class="producto-img"
-        [src]="p.imagen_portada_url || '/img/productos/default.png'"
+      <mat-card class="producto-card" appearance="outlined" [routerLink]="['/item', p.id]">
+        <img mat-card-image class="producto-img" [src]="p.imagen_portada_url || '/img/productos/default.png'"
           alt="Imagen del producto">
 
         <mat-card-content>
@@ -122,11 +153,8 @@
 </div>
 
 <div class="paginator">
-<mat-paginator [length]="100"
-              [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]"
-              aria-label="Select page">
-</mat-paginator>
+  <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+  </mat-paginator>
 </div>
 
 }

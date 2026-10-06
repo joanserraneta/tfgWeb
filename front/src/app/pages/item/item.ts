@@ -16,6 +16,10 @@ import { MatIcon } from '@angular/material/icon';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+
+
 
 
 import {MatGridListModule} from '@angular/material/grid-list';
@@ -27,10 +31,15 @@ export interface Tile {
   text: string;
 }
 
+interface Cantidades {
+  value: string;
+  viewValue: string;
+}
+
 @Component({
   selector: 'app-item',
   standalone: true,
-  imports: [MatGridListModule, MatCardModule, MatButtonModule, MatToolbar, MatIcon, MatChipsModule, RouterLink, MatIconModule, MatMenuModule],
+  imports: [MatGridListModule, MatCardModule, MatButtonModule, MatToolbar, MatIcon, MatChipsModule, RouterLink, MatIconModule, MatSelectModule, FormsModule, MatMenuModule],
   templateUrl: './item.html',
   styleUrl: './item.css',
 })
@@ -48,6 +57,16 @@ export class Item implements OnInit{
     {text: 'cinco', cols: 10, rows: 2, color: 'lightpink'},
     {text: 'Three', cols: 2, rows: 2, color: 'lightpink'},
   ];
+
+    cantidades: Cantidades[] = [
+    { value: '500 g', viewValue: '500 g' },
+    { value: '1 kg', viewValue: '1 kg' },
+    { value: '1.5 kg', viewValue: '1.5 kg' },
+    { value: '2 kg', viewValue: '2 kg' },
+    { value: '3 kg', viewValue: '3 kg' }
+  ];
+   cantidadesSeleccionadas: { [productoId: number]: string } = {};
+
 
   constructor(
     private route : ActivatedRoute,
