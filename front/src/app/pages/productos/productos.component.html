@@ -8,79 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<h2 class="titulo-productos">
-  <img src="/img/fresc1.png" alt="Icono de alcachofa" class="icono-alcachofa">
-  Fresc
-</h2>
 
-<!-- --------------------Menu-------------------------->
-<mat-toolbar>
-  <button matIconButton class="example-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item>
-      <mat-icon>dialpad</mat-icon>
-      <span>Redial</span>
-    </button>
-    <button mat-menu-item disabled>
-      <mat-icon>voicemail</mat-icon>
-      <span>Check voice mail</span>
-    </button>
-    <button mat-menu-item>
-      <mat-icon>notifications_off</mat-icon>
-      <span>Disable alerts</span>
-    </button>
-  </mat-menu>
-  <span>Menu</span>
-  <span class="example-spacer"></span>
-  <button matIconButton class="search-icon" aria-label="Example icon-button with heart icon">
-    <mat-icon>search</mat-icon>
-  </button>
-  <button matIconButton class="login-icon" aria-label="Example icon-button with share icon">
-    <mat-icon>login</mat-icon>
-  </button>
-  <button matIconButton [matMenuTriggerFor]="carritoMenu" class="cart-icon" aria-label="Example icon-button with cart icon">
-    <mat-icon>shopping_cart</mat-icon>
-  </button>
-  <mat-menu #carritoMenu="matMenu" class="carrito-menu">
 
-    <div class="carrito-popup" (click)="$event.stopPropagation()">
-
-      <h3>1 ARTÍCULO EN LA CESTA</h3>
-
-      <div class="producto-carrito">
-        <img src="assets/platano.jpg">
-
-        <div>
-          <strong>Plátano de Canarias</strong>
-          <p>Precio: 2,50 €</p>
-          <p>Cantidad: 1</p>
-        </div>
-
-        <button mat-icon-button>
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-
-      <hr>
-
-      <h3>Subtotal: 2,50 €</h3>
-
-      <div class="acciones">
-        <button mat-stroked-button>
-          Ver carrito
-        </button>
-
-        <button mat-flat-button>
-          Finalizar compra
-        </button>
-      </div>
-
-    </div>
-
-  </mat-menu>
-</mat-toolbar>
 <!-- --------------------BANNER-------------------------->
 <div class="banner">
   <img class="banner-img" [src]="bannerImagenes[bannerActual].src" [alt]="bannerImagenes[bannerActual].titulo">

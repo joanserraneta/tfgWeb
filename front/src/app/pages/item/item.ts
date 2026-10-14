@@ -6,40 +6,33 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
-  Producto,
   ProductosService
 } from '../../services/productos.service';
+import { Producto } from '../../models/producto';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
-import { MatToolbar} from '@angular/material/toolbar';
-import { MatIcon } from '@angular/material/icon';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-
-
+import { CarritoService } from '../../services/carrito.service';
 
 
 import {MatGridListModule} from '@angular/material/grid-list';
 
-export interface Tile {
-  color: string;
-  cols: number;
-  rows: number;
-  text: string;
-}
 
 interface Cantidades {
-  value: string;
+  value: number;
   viewValue: string;
 }
 
 @Component({
   selector: 'app-item',
   standalone: true,
-  imports: [MatGridListModule, MatCardModule, MatButtonModule, MatToolbar, MatIcon, MatChipsModule, RouterLink, MatIconModule, MatSelectModule, FormsModule, MatMenuModule],
+  imports: [MatGridListModule, MatCardModule, MatButtonModule, MatChipsModule, 
+    MatIconModule, MatSelectModule, FormsModule, MatMenuModule
+  ],
   templateUrl: './item.html',
   styleUrl: './item.css',
 })
@@ -49,29 +42,21 @@ export class Item implements OnInit{
   cargando = true;
   error = '';
 
-  tiles: Tile[] = [
-    {text: 'One', cols: 1, rows: 1, color: 'lightblue'},
-    {text: 'two', cols: 4, rows: 1, color: 'lightblue'},
-    {text: 'tres', cols: 1, rows: 1, color: 'lightgreen'},
-    {text: 'cuatro', cols: 3, rows: 1, color: 'lightpink'},
-    {text: 'cinco', cols: 10, rows: 2, color: 'lightpink'},
-    {text: 'Three', cols: 2, rows: 2, color: 'lightpink'},
-  ];
 
     cantidades: Cantidades[] = [
-    { value: '500 g', viewValue: '500 g' },
-    { value: '1 kg', viewValue: '1 kg' },
-    { value: '1.5 kg', viewValue: '1.5 kg' },
-    { value: '2 kg', viewValue: '2 kg' },
-    { value: '3 kg', viewValue: '3 kg' }
+    { value: 500, viewValue: '500 g' },
+    { value: 1000, viewValue: '1 kg' },
+    { value: 1500, viewValue: '1.5 kg' },
+    { value: 2000, viewValue: '2 kg' },
+    { value: 3000, viewValue: '3 kg' }
   ];
-   cantidadesSeleccionadas: { [productoId: number]: string } = {};
-
+   cantidadesSeleccionadas: { [productoId: number]: number } = {};
 
   constructor(
     private route : ActivatedRoute,
     private productosService: ProductosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public carritoService: CarritoService
   ){}
   ngOnInit(): void {
     console.log('HE ENTRADO EN NGONINIT');
@@ -105,5 +90,12 @@ export class Item implements OnInit{
         this.cargando = false;
       }
     });
+  }
+
+  addToCart(producto: Producto){
+    const cantidad = this.cantidadesSeleccionadas[producto.id] ?? 1;
+
+    this.carritoService.add(producto, cantidad);
+    console.log(this.carritoService.productos());
   }
 }

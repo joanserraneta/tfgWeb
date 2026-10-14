@@ -1,0 +1,105 @@
+<head>
+  <meta charset="utf-8">
+  <title>TfgWeb</title>
+  <base href="/">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<h2 class="titulo-productos" routerLink="/productos">
+  <img src="/img/fresc1.png" alt="Icono de alcachofa" class="icono-alcachofa" routerLink="/productos">
+  Fresc
+</h2>
+
+<!-- --------------------Menu-------------------------->
+<mat-toolbar class="barra-menu">
+  <button matIconButton class="toolbar-icon" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item>
+      <mat-icon>dialpad</mat-icon>
+      <span>Redial</span>
+    </button>
+    <button mat-menu-item disabled>
+      <mat-icon>voicemail</mat-icon>
+      <span>Check voice mail</span>
+    </button>
+    <button mat-menu-item>
+      <mat-icon>notifications_off</mat-icon>
+      <span>Disable alerts</span>
+    </button>
+  </mat-menu>
+  <span>Menu</span>
+
+  <span class="example-spacer"></span>
+  <button matIconButton class="toolbar-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>search</mat-icon>
+  </button>
+  <button matIconButton class="toolbar-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>login</mat-icon>
+  </button>
+  <button matIconButton [matMenuTriggerFor]="carritoMenu" class="toolbar-icon"
+    aria-label="Example icon-button with cart icon">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+
+  <!-- ---------------------------------------------------------Carrito---------------------------------------------------------------->
+  <mat-menu #carritoMenu="matMenu" class="border-2">
+
+    <div class="m-2" (click)="$event.stopPropagation()">
+      <div>
+        @if (carritoService.productos().length != 1){
+        <h3>{{carritoService.productos().length}} Artículos En la cesta</h3>
+        } @else {
+        <h3>1 Artículo En la cesta</h3>
+        }
+      </div>
+
+  <!-- ---------------------------------------------------------Productos---------------------------------------------------------------->
+      <div class="flex flex-col">
+        @if (carritoService.productos().length > 0){
+        @for (item of carritoService.productos(); track item.producto.id) {
+        <div class="flex flex-row gap-2 border border-b-blue-950 items-center">
+          <div> <img mat-card-image class="producto-img"
+              [src]="item.producto.imagen_portada_url || '/img/productos/default.png'" alt="item.nombre"></div>
+          <div class="flex flex-col">
+            <div>
+              <h3>{{ item.producto.nombre }}</h3>
+            </div>
+            <div class="flex flex-row gap-2">
+              <p>Cantidad: {{ item.cantidad / 1000}} Kg </p>
+              <p>Precio: {{ item.producto.precio}} €</p>
+            </div>
+            <button mat-icon-button (click)="carritoService.eliminar(item.producto.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+        </div>
+        }
+        } @else {
+        <p>El carrito está vacio</p>
+        }
+      </div>
+  <!-- ---------------------------------------------------------Subtotal---------------------------------------------------------------->
+      <hr>
+
+      <h3>Subtotal: {{carritoService.subtotal()}} €</h3>
+
+      <div class="flex flex-row">
+        <button mat-stroked-button>
+          Ver carrito
+        </button>
+
+        <button mat-flat-button>
+          Finalizar compra
+        </button>
+      </div>
+
+    </div>
+
+  </mat-menu>
+</mat-toolbar>

@@ -1,22 +1,3 @@
-.titulo-productos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-
-  color: #14532D;
-  font-family: 'Poppins', sans-serif;
-  font-size: 5.2rem;
-  font-weight: 700;
-
-  margin-bottom: 24px;
-}
-
-.icono-alcachofa {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-}
 
 .contenedor-productos {
   max-width: 1600px;

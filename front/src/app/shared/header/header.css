@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 1000;
+}
+
+.icono-alcachofa {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+.titulo-productos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  color: #14532D;
+  font-family: 'Poppins', sans-serif;
+  font-size: 5.2rem;
+  font-weight: 700;
+
+  margin-bottom: 24px;
+}
+.barra-menu {
+  background-color: #14532D;
+  color: white;
+}
+
+.producto-img {
+  height: 70px;
+  width: 70px;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.toolbar-icon{
+  color:white
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
