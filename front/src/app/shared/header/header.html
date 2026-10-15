@@ -1,12 +1,3 @@
-<head>
-  <meta charset="utf-8">
-  <title>TfgWeb</title>
-  <base href="/">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
 
 <h2 class="titulo-productos" routerLink="/productos">
   <img src="/img/fresc1.png" alt="Icono de alcachofa" class="icono-alcachofa" routerLink="/productos">
@@ -47,59 +38,92 @@
   </button>
 
   <!-- ---------------------------------------------------------Carrito---------------------------------------------------------------->
-  <mat-menu #carritoMenu="matMenu" class="border-2">
+  <mat-menu #carritoMenu="matMenu" class="carrito-menu">
+  <div class="w-full p-4" (click)="$event.stopPropagation()">
 
-    <div class="m-2" (click)="$event.stopPropagation()">
-      <div>
-        @if (carritoService.productos().length != 1){
-        <h3>{{carritoService.productos().length}} Artículos En la cesta</h3>
-        } @else {
-        <h3>1 Artículo En la cesta</h3>
-        }
-      </div>
+    <!-- CABECERA -->
+    <div class="mb-3">
+      @if (carritoService.productos().length === 1) {
+        <h3 class="m-0 text-lg font-semibold">1 artículo en la cesta</h3>
+      } @else {
+        <h3 class="m-0 text-lg font-semibold">
+          {{ carritoService.productos().length }} artículos en la cesta
+        </h3>
+      }
+    </div>
 
-  <!-- ---------------------------------------------------------Productos---------------------------------------------------------------->
-      <div class="flex flex-col">
-        @if (carritoService.productos().length > 0){
+    <!-- PRODUCTOS -->
+    <div class="flex flex-col">
+      @if (carritoService.productos().length > 0) {
+
         @for (item of carritoService.productos(); track item.producto.id) {
-        <div class="flex flex-row gap-2 border border-b-blue-950 items-center">
-          <div> <img mat-card-image class="producto-img"
-              [src]="item.producto.imagen_portada_url || '/img/productos/default.png'" alt="item.nombre"></div>
-          <div class="flex flex-col">
-            <div>
-              <h3>{{ item.producto.nombre }}</h3>
+          <div class="flex gap-3 py-3 border-b border-gray-200">
+
+            <img
+              class="w-24 h-24 object-cover rounded-lg shrink-0"
+              [src]="item.producto.imagen_portada_url || '/img/productos/default.png'"
+              [alt]="item.producto.nombre"
+            >
+
+            <div class="flex flex-col flex-1">
+              <h3 class="m-0 font-semibold text-base">
+                {{ item.producto.nombre }}
+              </h3>
+
+              <div class="flex gap-4 mt-1 text-sm text-gray-600">
+                <p class="m-0">
+                  <span class="font-medium text-gray-800">Cantidad:</span>
+                  {{ item.cantidad / 1000 }} Kg
+                </p>
+
+                <p class="m-0">
+                  <span class="font-medium text-gray-800">Precio:</span>
+                  {{ item.producto.precio }} €/Kg
+                </p>
+              </div>
+
+              <button
+                mat-icon-button
+                class="mt-auto self-start"
+                aria-label="Eliminar producto"
+                (click)="carritoService.eliminar(item.producto.id)"
+              >
+                <mat-icon class="text-red-500">delete</mat-icon>
+              </button>
             </div>
-            <div class="flex flex-row gap-2">
-              <p>Cantidad: {{ item.cantidad / 1000}} Kg </p>
-              <p>Precio: {{ item.producto.precio}} €</p>
-            </div>
-            <button mat-icon-button (click)="carritoService.eliminar(item.producto.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
+
           </div>
+        }
 
+      } @else {
+        <div class="py-8 text-center text-gray-500">
+          <mat-icon class="mb-2">shopping_cart</mat-icon>
+          <p class="m-0">El carrito está vacío</p>
         </div>
-        }
-        } @else {
-        <p>El carrito está vacio</p>
-        }
+      }
+    </div>
+
+    <!-- SUBTOTAL -->
+    @if (carritoService.productos().length > 0) {
+      <div class="flex justify-between items-center py-4">
+        <span class="font-medium text-gray-600">Subtotal</span>
+        <span class="text-xl font-bold">
+          {{ carritoService.subtotal().toFixed(2) }} €
+        </span>
       </div>
-  <!-- ---------------------------------------------------------Subtotal---------------------------------------------------------------->
-      <hr>
 
-      <h3>Subtotal: {{carritoService.subtotal()}} €</h3>
-
-      <div class="flex flex-row">
-        <button mat-stroked-button>
+      <!-- BOTONES -->
+      <div class="flex gap-2">
+        <button mat-stroked-button class="flex-1" routerLink="/principalCarrito">
           Ver carrito
         </button>
 
-        <button mat-flat-button>
+        <button mat-flat-button class="flex-1">
           Finalizar compra
         </button>
       </div>
+    }
 
-    </div>
-
-  </mat-menu>
+  </div>
+</mat-menu>
 </mat-toolbar>

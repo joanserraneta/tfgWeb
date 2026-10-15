@@ -93,9 +93,8 @@ export class Item implements OnInit{
   }
 
   addToCart(producto: Producto){
-    const cantidad = this.cantidadesSeleccionadas[producto.id] ?? 1;
+    const cantidad = this.cantidadesSeleccionadas[producto.id] ?? 1000;
 
     this.carritoService.add(producto, cantidad);
-    console.log(this.carritoService.productos());
   }
 }

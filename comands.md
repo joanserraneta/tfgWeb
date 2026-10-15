@@ -6,6 +6,9 @@ cd ~/tfg/tfgWeb/backend
 source venv/bin/activate
 python -m uvicorn app.main:app --reload
 
+
+npx ng generate component pages/xx
+
 --
 
 | Tailwind | CSS aproximado | Para qué sirve |

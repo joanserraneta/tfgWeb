@@ -14,9 +14,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
 import {MatMenuModule} from '@angular/material/menu';
+import { CarritoService } from '../../services/carrito.service';
 
 interface Cantidades {
-  value: string;
+  value: number;
   viewValue: string;
 }
 
@@ -63,15 +64,17 @@ export class ProductosComponent implements OnInit, OnDestroy {
   private intervaloBanner: any;
 
   cantidades: Cantidades[] = [
-    { value: '500 g', viewValue: '500 g' },
-    { value: '1 kg', viewValue: '1 kg' },
-    { value: '1.5 kg', viewValue: '1.5 kg' },
-    { value: '2 kg', viewValue: '2 kg' },
-    { value: '3 kg', viewValue: '3 kg' }
+    { value: 500, viewValue: '500 g' },
+    { value: 1000, viewValue: '1 kg' },
+    { value: 1500, viewValue: '1.5 kg' },
+    { value: 2000, viewValue: '2 kg' },
+    { value: 3000, viewValue: '3 kg' }
   ];
+  cantidadesSeleccionadas: { [productoId: number]: number } = {};
   constructor(
     private productosService: ProductosService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public carritoService: CarritoService
   ) { }
 
   ngOnInit(): void {
@@ -85,18 +88,13 @@ export class ProductosComponent implements OnInit, OnDestroy {
     }
   }
 
-  cantidadesSeleccionadas: { [productoId: number]: string } = {};
-
-  agregarAlCarrito(producto: Producto): void {
+  addToCart(producto: Producto){
     const cantidad = this.cantidadesSeleccionadas[producto.id];
-
-    if (!cantidad) {
-      alert('Selecciona una cantidad');
+    if(!cantidad){
       return;
     }
+    this.carritoService.add(producto, cantidad);
 
-    console.log('Producto:', producto);
-    console.log('Cantidad:', cantidad);
   }
 
   iniciaBanner() {
@@ -142,7 +140,7 @@ export class ProductosComponent implements OnInit, OnDestroy {
 
     this.productosService.getProductos().subscribe({
       next: (data) => {
-        console.log('Productos recibidos:', data);
+        //console.log('Productos recibidos:', data);
         this.productos = [...data];
         this.cargando = false;
         this.error = '';
@@ -157,6 +155,4 @@ export class ProductosComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-
 }
