@@ -3,8 +3,13 @@
 <div class="banner">
   <img class="banner-img" [src]="bannerImagenes[bannerActual].src" [alt]="bannerImagenes[bannerActual].titulo">
   <div class="banner-overlay">
-    <h3>{{bannerImagenes[bannerActual].titulo}}</h3>
-    <p>{{bannerImagenes[bannerActual].texto}}</p>
+    <h3 class="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight">
+  {{ bannerImagenes[bannerActual].titulo }}
+</h3>
+
+<p class="text-base md:text-lg mt-4">
+  {{ bannerImagenes[bannerActual].texto }}
+</p>
   </div>
 
   <button matIconButton class="banner-btn banner-btn-left" (click)="anteriorBanner()">
@@ -34,40 +39,69 @@
 }
 
 @if (!cargando && productos.length > 0) {
-<div class="contenedor-productos">
-  <mat-grid-list cols="4" rowHeight="480px">
+<div class="max-w-[1600px] mx-auto px-6 py-8">
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
     @for (p of productos; track p.id) {
-    <mat-grid-tile>
-      <mat-card class="producto-card" appearance="outlined">
-        <img mat-card-image class="producto-img" [src]="p.imagen_portada_url || '/img/productos/default.png'"
-        [routerLink]="['/item', p.id]" alt="p.nombre">
 
-        <mat-card-content>
-          <mat-card-title [routerLink]="['/item', p.id]">{{ p.nombre }}</mat-card-title>
-          <p [routerLink]="['/item', p.id]"><strong>Precio:</strong> {{ p.precio }} €</p>
+      <mat-card
+        class="w-full h-full flex flex-col overflow-hidden"
+        appearance="outlined">
 
-          <mat-form-field appearance="outline" class="campo-cantidad">
+        <!-- IMAGEN -->
+        <img
+          mat-card-image
+          class="w-full h-52 object-cover cursor-pointer"
+          [src]="p.imagen_portada_url || '/img/productos/default.png'"
+          [routerLink]="['/item', p.id]"
+          [alt]="p.nombre">
+
+        <!-- INFORMACIÓN -->
+        <mat-card-content class="flex flex-col flex-1 p-5">
+
+          <mat-card-title
+            class="cursor-pointer text-xl font-semibold"
+            [routerLink]="['/item', p.id]">
+            {{ p.nombre }}
+          </mat-card-title>
+
+          <p
+            class="mt-3 cursor-pointer"
+            [routerLink]="['/item', p.id]">
+            <strong>Precio:</strong> {{ p.precio }} €/Kg
+          </p>
+
+          <mat-form-field appearance="outline" class="w-full mt-4">
             <mat-label>Cantidad</mat-label>
 
             <mat-select [(ngModel)]="cantidadesSeleccionadas[p.id]">
               @for (cantidad of cantidades; track cantidad.value) {
-              <mat-option [value]="cantidad.value">
-                {{ cantidad.viewValue }}
-              </mat-option>
+                <mat-option [value]="cantidad.value">
+                  {{ cantidad.viewValue }}
+                </mat-option>
               }
             </mat-select>
           </mat-form-field>
+
+          <!-- Empuja el botón hacia abajo -->
+          <div class="mt-auto pt-3">
+            <button
+              mat-flat-button
+              class="w-full"
+              [disabled]="cantidadesSeleccionadas[p.id] === undefined"
+              (click)="addToCart(p)">
+              Añadir al carrito
+            </button>
+          </div>
+
         </mat-card-content>
 
-        <mat-card-actions>
-          <button matButton="filled" (click)="addToCart(p)">
-            Añadir al carrito
-          </button>
-        </mat-card-actions>
       </mat-card>
-    </mat-grid-tile>
     }
-  </mat-grid-list>
+
+  </div>
+
 </div>
 
 <div class="paginator">

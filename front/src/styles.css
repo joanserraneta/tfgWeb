@@ -7,3 +7,12 @@
   width: 420px;
   max-height: 620px;
 }
+
+.mat-mdc-menu-panel.login-menu {
+  width: 380px !important;
+  max-width: 380px !important;
+}
+
+.mat-mdc-menu-panel.login-menu .mat-mdc-menu-content {
+  padding: 0 !important;
+}

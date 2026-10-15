@@ -1,70 +1,169 @@
-@if (cargando){
-<p>Cargando productos...</p>
+@if (cargando) {
+  <div class="flex justify-center py-20">
+    <p class="text-lg text-gray-500">Cargando producto...</p>
+  </div>
 }
+
 @if (error) {
-<p>{{ error }}</p>
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <p class="text-red-600">{{ error }}</p>
+  </div>
 }
 
 @if (producto) {
-<main>
-   
+  <main class="max-w-7xl mx-auto px-6 py-10">
 
-    <!-- -------------------articulo ----------------------->
+    <!-- PRODUCTO PRINCIPAL -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1.35fr_0.85fr] gap-12 items-stretch">
+
+      <!-- IMAGEN -->
+<div class="flex flex-col gap-4">
+
+  <!-- IMAGEN PRINCIPAL -->
+  <div class="relative overflow-hidden rounded-2xl bg-white">
+
+    <img
+      class="w-full h-[520px] object-cover"
+      [src]="imagenesProducto[imagenActual]"
+      [alt]="producto.nombre">
+
+    <!-- FLECHA IZQUIERDA -->
+    @if (imagenesProducto.length > 1) {
+      <button
+        mat-icon-button
+        class="absolute! left-4 top-1/2 -translate-y-1/2 bg-white/80!"
+        (click)="anteriorImagen()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <!-- FLECHA DERECHA -->
+      <button
+        mat-icon-button
+        class="absolute! right-4 top-1/2 -translate-y-1/2 bg-white/80!"
+        (click)="siguienteImagen()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    }
+
+  </div>
 
 
-    <div class="producto-page">
-        <div class="producto-principal">
-            <div class="producto-img">
-                <img class=producto-img [src]=producto.imagen_portada_url alt="producto.nombre">
-            </div>
-            <mat-card class="producto-info" appearance="outlined">
-                <mat-card-header>
-                    <div mat-card-avatar class="example-header-image"></div>
-                    <mat-card-title>{{producto.nombre}}</mat-card-title>
-                    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-                </mat-card-header>
+  <!-- MINIATURAS -->
+  @if (imagenesProducto.length > 1) {
+    <div class="flex gap-3 justify-center overflow-x-auto">
 
-                <mat-card-content>
-                </mat-card-content>
-                <mat-card-actions>
-                    <div class="acciones">
-                        <mat-form-field appearance="outline" class="campo-cantidad">
-                            <mat-label>Cantidad</mat-label>
-                            <mat-select [(ngModel)]="cantidadesSeleccionadas[producto.id]">
-                                @for (cantidad of cantidades; track cantidad.value) {
-                                <mat-option [value]="cantidad.value">
-                                    {{ cantidad.viewValue }}
-                                </mat-option>
-                                }
-                            </mat-select>
-                        </mat-form-field>
-                        <button mat-button>Comprar ahora</button>
-                        <button mat-button
-                        (click)="addToCart(producto)"
-                        >Añadir al carrito</button>
-                    </div>
+      @for (imagen of imagenesProducto; track imagen; let i = $index) {
 
-                </mat-card-actions>
-            </mat-card>
+        <button
+          type="button"
+          class="rounded-lg overflow-hidden border-2 cursor-pointer shrink-0"
+          [class.border-green-700]="imagenActual === i"
+          [class.border-transparent]="imagenActual !== i"
+          (click)="seleccionarImagen(i)">
+
+          <img
+            class="w-20 h-20 object-cover"
+            [src]="imagen"
+            [alt]="producto.nombre + ' ' + (i + 1)">
+
+        </button>
+
+      }
+
+    </div>
+  }
+
+</div>
+
+
+      <!-- INFORMACIÓN / COMPRA -->
+      <mat-card
+        appearance="outlined"
+        class="rounded-2xl! p-8">
+
+        <div class="flex flex-col h-full">
+
+          <!-- Nombre -->
+          <div>
+            <p class="text-sm text-gray-500 mb-2">
+              Producto fresco
+            </p>
+
+            <h1 class="text-4xl font-bold mb-3">
+              {{ producto.nombre }}
+            </h1>
+
+            <p class="text-2xl font-semibold text-green-800">
+              {{ producto.precio }} €/Kg
+            </p>
+          </div>
+
+
+          <!-- Cantidad -->
+          <div class="mt-10">
+            <p class="font-semibold mb-2">
+              Selecciona una cantidad
+            </p>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Cantidad</mat-label>
+
+              <mat-select [(ngModel)]="cantidadesSeleccionadas[producto.id]">
+                @for (cantidad of cantidades; track cantidad.value) {
+                  <mat-option [value]="cantidad.value">
+                    {{ cantidad.viewValue }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
+          <!-- BOTONES -->
+          <div class="flex flex-col gap-3 mt-auto pt-8">
+
+            <button
+              mat-flat-button
+              class="w-full">
+              Comprar ahora
+            </button>
+
+            <button
+              mat-stroked-button
+              class="w-full"
+              [disabled]="cantidadesSeleccionadas[producto.id] === undefined"
+              (click)="addToCart(producto)">
+              Añadir al carrito
+            </button>
+
+          </div>
+
         </div>
-        <mat-card class="example-card" appearance="outlined">
-            <mat-card-header>
-                <mat-card-title>{{producto.nombre}}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <p>{{producto.descripcion}}</p>
-            </mat-card-content>
-            <mat-card-footer class="example-card-footer">
-                <mat-chip-set aria-label="Chihuahua traits">
-                    <mat-chip>Dulce</mat-chip>
-                    <mat-chip>Natural</mat-chip>
-                    <mat-chip>Producto nacional</mat-chip>
-                </mat-chip-set>
-            </mat-card-footer>
-        </mat-card>
+      </mat-card>
+
     </div>
 
 
+    <!-- DESCRIPCIÓN -->
+    <mat-card
+      appearance="outlined"
+      class="mt-10 rounded-2xl! p-8">
 
-</main>
+      <h2 class="text-2xl font-bold mb-3">
+        {{ producto.nombre }}
+      </h2>
+
+      <p class="text-gray-600 text-lg leading-relaxed mb-6">
+        {{ producto.descripcion }}
+      </p>
+
+      <mat-chip-set aria-label="Características del producto">
+        <mat-chip>Dulce</mat-chip>
+        <mat-chip>Natural</mat-chip>
+        <mat-chip>Producto nacional</mat-chip>
+      </mat-chip-set>
+
+    </mat-card>
+
+  </main>
 }
