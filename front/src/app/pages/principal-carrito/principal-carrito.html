@@ -1,39 +1,83 @@
-<div class="flex flex-row p-20">
+<div class="flex flex-row gap-12 p-20 items-start justify-center">
 
-    <!-- -------------------productos ----------------------->
-    <div class="flex flex-col">
-        @for (item of carritoService.productos(); track item.producto.id) {
-        <div class="flex flex-row gap-3 p-5 border-b border-gray-200">
-            <img class="w-54 h-54 object-cover rounded-lg shrink-0"
-                [src]="item.producto.imagen_portada_url || '/img/productos/default.png'" [alt]="item.producto.nombre">
-            <div class="flex flex-col gap-4">
-                <div class="flex flex-row gap-20 items-center">
-                    <h1 class="text-2xl font-bold">{{item.producto.nombre}}</h1>
-                    <button mat-icon-button class="mt-auto self-start" aria-label="Eliminar producto"
-                        (click)="carritoService.eliminar(item.producto.id)">
-                        <mat-icon class="text-red-500">delete</mat-icon>
-                    </button>
-                </div>
-                <h2 class="text-xl">Cantidad: {{item.cantidad / 1000}} Kg</h2>
-                <h2 class="text-xl">Precio/Kilo: {{item.producto.precio}} €/Kg</h2>
-                <h2 class="text-xl">Precio total: {{(item.cantidad * item.producto.precio) / 1000}}</h2>
-            </div>
+  <!-- ------------------- PRODUCTOS ----------------------->
+  <div class="flex flex-col flex-1 max-w-3xl">
+
+    @for (item of carritoService.productos(); track item.producto.id) {
+
+      <div class="flex flex-row gap-5 py-6 border-b border-gray-200">
+
+        <img
+          class="w-52 h-52 object-cover rounded-xl shrink-0"
+          [src]="item.producto.imagen_portada_url || '/img/productos/default.png'"
+          [alt]="item.producto.nombre">
+
+        <div class="flex flex-col gap-3 flex-1">
+
+          <div class="flex flex-row justify-between items-start">
+            <h1 class="text-2xl font-bold">
+              {{ item.producto.nombre }}
+            </h1>
+
+            <button
+              mat-icon-button
+              aria-label="Eliminar producto"
+              (click)="carritoService.eliminar(item.producto.id)">
+              <mat-icon class="text-red-500">delete</mat-icon>
+            </button>
+          </div>
+
+          <h2 class="text-xl">
+            Cantidad: {{ item.cantidad / 1000 }} Kg
+          </h2>
+
+          <h2 class="text-xl">
+            Precio/Kilo: {{ item.producto.precio }} €/Kg
+          </h2>
+
+          <h2 class="text-xl">
+            Precio total:
+            {{ ((item.cantidad * item.producto.precio) / 1000).toFixed(2) }} €
+          </h2>
+
         </div>
-        }
+
+      </div>
+
+    }
+
+  </div>
+
+
+  <!-- ------------------- RESUMEN / PAGO ----------------------->
+  <div class="w-[420px] shrink-0 border border-gray-300 rounded-2xl p-8 shadow-sm">
+
+    <h2 class="text-2xl font-bold mb-6">
+      Resumen del pedido
+    </h2>
+
+    <div class="flex justify-between items-center border-b border-gray-200 pb-5 mb-6">
+
+      @if (carritoService.productos().length > 1) {
+        <span class="text-lg">
+          Subtotal ({{ carritoService.productos().length }} productos)
+        </span>
+      } @else {
+        <span class="text-lg">
+          Subtotal ({{ carritoService.productos().length }} producto)
+        </span>
+      }
+
+      <span class="text-2xl font-bold">
+        {{ carritoService.subtotal().toFixed(2) }} €
+      </span>
+
     </div>
 
-    <!-- -------------------pago ----------------------->
-    <div class="flex flex-col p-20 gap-20 border rounded-2xl">
-        <div class="flex flex-row border rounded-2xl text-2xl p-10">
-            @if(carritoService.productos().length > 1){
-            <h1>Subtotal ({{carritoService.productos().length}} productos): </h1>
-            } @else{
-            <h1>Subtotal ({{carritoService.productos().length}} producto): </h1>
-            }
-            <h1 class="font-bold">{{carritoService.subtotal()}}€</h1>
-        </div>
-        <button mat-flat-button class="">
-            Finalizar compra
-        </button>
-    </div>
+    <button mat-flat-button class="w-full" routerLink="/finalCompra">
+      Finalizar compra
+    </button>
+
+  </div>
+
 </div>
